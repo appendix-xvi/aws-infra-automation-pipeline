@@ -26,6 +26,20 @@ This repository showcases **real DevOps automation** in a hybrid infrastructure 
 
 ---
 
+## 🆕 Feature 2026 Update (Reviewed)
+
+This repository has been reviewed and updated with a practical **2026 feature direction** focused on production readiness:
+
+- Add Terraform remote state + state locking (S3 + DynamoDB)
+- Add environment separation (`dev`, `staging`, `prod`) with reusable modules
+- Add security checks in CI (`tfsec`/`checkov`, `ansible-lint`)
+- Add containerized monitoring stack option (Prometheus + Grafana via Docker Compose)
+- Add GitOps-ready deployment path for Kubernetes expansion
+
+> Goal for 2026: move from portfolio lab to a reusable baseline for team infrastructure delivery.
+
+---
+
 ## 📁 Project Structure
 
 ```text
@@ -142,4 +156,3 @@ Currently looking for new opportunities in the field of DevOps and Cloud Infrast
 **SEO Keywords:**  
 `devops portfolio`, `terraform ansible automation`, `gitlab ci k8s pipeline`, `real aws infrastructure`, `cloud automation`, `open to work devops`, `grafana monitoring lab`
 ---
-
