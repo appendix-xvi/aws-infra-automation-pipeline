@@ -1,114 +1,111 @@
 # AWS Infrastructure Automation Pipeline
 
-A DevOps lab that demonstrates end-to-end infrastructure automation on AWS using Terraform, Ansible, GitLab CI/CD, and a monitoring stack.
+A DevOps lab for practicing AWS infrastructure automation with Terraform, Ansible, and GitLab CI/CD.
 
-The project is designed as a practical portfolio repository: it shows how infrastructure can be provisioned, configured, and validated through repeatable automation rather than manual setup.
+This repository is intended as a portfolio project, but it is still a lab baseline rather than a production-ready AWS landing zone. The goal is to show a repeatable infrastructure delivery flow without committing real credentials or account-specific configuration.
 
-## Overview
+## What this project demonstrates
 
-This lab covers a complete infrastructure delivery flow:
+- Terraform-based AWS infrastructure provisioning
+- Ansible-based EC2 configuration workflow
+- GitLab CI/CD stages for planning and configuration
+- Basic monitoring stack positioning with Prometheus and Grafana
+- Documentation for safe lab usage and future hardening
 
-1. GitLab CI/CD runs the automation pipeline.
-2. Terraform provisions AWS infrastructure such as VPC, EC2, S3, and RDS.
-3. Ansible configures EC2 instances and installs application or monitoring components.
-4. Prometheus and Grafana provide basic observability for the deployed environment.
-
-## Capabilities
-
-| Area | Implementation |
-|---|---|
-| Infrastructure provisioning | Terraform modules and AWS resources |
-| Configuration management | Ansible playbooks |
-| Dynamic inventory | Ansible with EC2 inventory integration |
-| CI/CD automation | GitLab CI/CD pipeline stages |
-| Monitoring | Prometheus and Grafana |
-| Documentation | Markdown and architecture diagrams |
-
-## Project Structure
+## Architecture flow
 
 ```text
-automation-devops-lab/
+GitLab CI/CD
+  -> Terraform init/plan
+  -> manual Terraform apply
+  -> Ansible inventory/configuration
+  -> monitoring validation
+```
+
+## Repository structure
+
+```text
+aws-infra-automation-pipeline/
 ├── README.md
 ├── .gitlab-ci.yml
 ├── terraform/
-│   ├── main.tf
-│   ├── vpc.tf
-│   ├── rds.tf
-│   ├── s3.tf
-│   └── variables.tf
 ├── ansible/
-│   ├── site.yml
-│   ├── prometheus_grafana.yml
-│   └── aws_ec2_inventory.py
-└── images/
-    ├── infra-deploy-flow.png
-    └── grafana-ui.png
+└── docs/
 ```
+
+The exact folder contents should be kept in sync with the repository. Do not document files that are not committed.
 
 ## Prerequisites
 
-- AWS account and IAM credentials
+- AWS account for lab usage
+- AWS credentials with limited lab permissions
 - Terraform installed locally or available in the CI runner
 - Ansible installed locally or available in the CI runner
 - GitLab project with CI/CD enabled
-- Required AWS permissions for VPC, EC2, S3, and RDS resources
 
-## Quick Start
+## Local validation
 
-Clone the repository:
-
-```bash
-git clone https://github.com/Nuntin/automation-devops-lab.git
-cd automation-devops-lab
-```
-
-Provision AWS infrastructure:
+From the repository root:
 
 ```bash
 cd terraform
-terraform init
-terraform apply -auto-approve -var-file="terraform.tfvars"
+terraform init -input=false
+terraform plan
 ```
 
-Run Ansible configuration:
+Run Ansible only after Terraform has produced reachable EC2 targets or after you have prepared an inventory file:
 
 ```bash
 cd ../ansible
-chmod +x aws_ec2_inventory.py
 ansible-playbook -i aws_ec2_inventory.py site.yml
-ansible-playbook -i aws_ec2_inventory.py prometheus_grafana.yml
 ```
 
-## Validation
+## GitLab CI/CD behavior
 
-After deployment, validate the environment by checking:
+The pipeline should be treated as a controlled infrastructure workflow:
 
-- Terraform apply output and resource state
-- EC2 instance reachability
-- Ansible playbook success summary
-- Prometheus target health
-- Grafana dashboard availability
+1. `terraform_plan` generates a Terraform plan.
+2. `terraform_apply` must be manual before it changes AWS resources.
+3. `ansible_configure` should run only after infrastructure is available.
 
-## Planned Improvements
+Production-style automation should never auto-apply infrastructure from every commit.
 
-The next improvement areas are focused on production readiness:
+## Required CI/CD variables
 
-- Terraform remote state and state locking with S3 and DynamoDB
-- Environment separation for `dev`, `staging`, and `prod`
-- Reusable Terraform modules
-- CI security checks using tools such as `tfsec`, `checkov`, and `ansible-lint`
-- Optional containerized monitoring stack for local testing
-- GitOps-ready deployment path for Kubernetes-based workloads
+Use GitLab protected/masked variables where possible:
 
-## Notes
+```text
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_DEFAULT_REGION
+```
 
-- This repository is a lab environment, not a production-ready baseline.
-- Review IAM scope, network exposure, secrets handling, and cost impact before running it in a real AWS account.
-- Do not commit real credentials, private keys, or production configuration files.
+For real usage, prefer short-lived credentials or OIDC federation instead of long-lived static access keys.
 
-## Author
+## Validation checklist
 
-Nuntin Padmadin
+Before showing this repository as portfolio work, verify:
 
-- GitHub: [github.com/Nuntin](https://github.com/Nuntin)
-- LinkedIn: [linkedin.com/in/nuntin-padmadin-97b708145](https://www.linkedin.com/in/nuntin-padmadin-97b708145/)
+- Terraform formatting passes.
+- Terraform plan runs without local-only assumptions.
+- Apply is manual in CI.
+- Ansible inventory source is documented.
+- No real credentials, private keys, or account-specific secrets are committed.
+
+## Current limitations
+
+- This is a lab repository, not a hardened production AWS baseline.
+- IAM policies, network exposure, state backend, and secret handling need review before real usage.
+- Remote state and state locking should be added before shared-team usage.
+
+## Future improvements
+
+- Terraform remote state with S3 and DynamoDB locking
+- Separate dev/staging/prod inputs
+- CI checks for `terraform fmt`, `terraform validate`, Checkov, and Ansible lint
+- OIDC-based GitLab-to-AWS authentication
+- More explicit monitoring validation steps
+
+## License
+
+MIT
